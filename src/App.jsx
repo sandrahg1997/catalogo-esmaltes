@@ -31,6 +31,13 @@ export default function App() {
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState(supabase ? undefined : null);
   const [loadErr, setLoadErr] = useState('');
+  const [localMode, setLocalModeState] = useState(() => {
+    try { return localStorage.getItem('modoLocal') === '1'; } catch { return false; }
+  });
+  const setLocalMode = (on) => {
+    try { localStorage.setItem('modoLocal', on ? '1' : '0'); } catch { /* sin almacenamiento */ }
+    setLocalModeState(on);
+  };
   const reload = useCallback(async () => {
     try { setPolishes(await getAll()); setLoadErr(''); } catch (e) { setLoadErr(e.message || 'No se pudo cargar'); }
     setReady(true);
@@ -45,13 +52,13 @@ export default function App() {
 
   useEffect(() => {
     if (session === undefined) return;
-    setCloudMode(!!session);
-    if (supabase && !session) { setPolishes([]); setReady(true); return; }
+    setCloudMode(!!session && !localMode);
+    if (supabase && !session && !localMode) { setPolishes([]); setReady(true); return; }
     reload();
-  }, [session, reload]);
+  }, [session, localMode, reload]);
 
   if (!ready) return null;
-  if (supabase && !session) return <Login />;
+  if (supabase && !session && !localMode) return <Login onLocal={() => setLocalMode(true)} />;
   const brands = [...new Set(polishes.map((p) => p.brand).filter(Boolean))].sort();
   const full = route.startsWith('/esmalte/') || route === '/anadir' || route === '/ajustes';
   const isColor = route === '/color';
@@ -59,7 +66,7 @@ export default function App() {
   let view;
   if (route === '/anadir') view = <Form brands={brands} onDone={async () => { await reload(); go('/'); }} onCancel={() => go('/')} />;
   else if (route.startsWith('/esmalte/')) view = <Detail id={route.split('/')[2]} polishes={polishes} go={go} reload={reload} />;
-  else if (route === '/ajustes') view = <Settings go={go} reload={reload} count={polishes.length} session={session} />;
+  else if (route === '/ajustes') view = <Settings go={go} reload={reload} count={polishes.length} session={session} localMode={localMode} setLocalMode={setLocalMode} />;
   else if (isColor) view = <ByColor polishes={polishes} go={go} />;
   else view = <Gallery polishes={polishes} go={go} />;
 

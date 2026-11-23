@@ -13,7 +13,7 @@ const DEMO = [
   ['Zoya', 'Poppy', '#C8342E', 'Crema'], ['Catrice', 'Nude Beige', '#D2AA94', 'Crema']
 ];
 
-export default function Settings({ go, reload, count, session }) {
+export default function Settings({ go, reload, count, session, localMode, setLocalMode }) {
   const [msg, setMsg] = useState('');
 
   const doExport = async () => {
@@ -47,7 +47,7 @@ export default function Settings({ go, reload, count, session }) {
         <span style={{ width: 44 }} />
       </header>
 
-      {supabase && session && (
+      {supabase && session && !localMode && (
         <section className="card block">
           <h2>Cuenta</h2>
           <p className="muted small">Sesión iniciada como {session.user.email}. Tus esmaltes ({count}) y fotos están guardados en la nube.</p>
@@ -63,9 +63,17 @@ export default function Settings({ go, reload, count, session }) {
         </section>
       )}
 
+      {supabase && localMode && (
+        <section className="card block">
+          <h2>Modo solo en este móvil</h2>
+          <p className="muted small">Ahora guardas sin cuenta, solo en este móvil. Cuando quieras pasar a la nube, entra con tu cuenta y usa «Subir los esmaltes guardados en este móvil».</p>
+          <button className="ghost" onClick={() => setLocalMode(false)}>Entrar con mi cuenta</button>
+        </section>
+      )}
+
       <section className="card block">
         <h2>Copia de seguridad</h2>
-        <p className="muted small">{supabase && session ? `Tus esmaltes (${count}) ya están en la nube. La copia es un extra.` : `Los esmaltes (${count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.`}</p>
+        <p className="muted small">{supabase && session && !localMode ? `Tus esmaltes (${count}) ya están en la nube. La copia es un extra.` : `Los esmaltes (${count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.`}</p>
         <button className="primary" onClick={doExport}>Descargar copia</button>
         <label className="file"><input type="file" accept="application/json" onChange={doImport} /><span>Restaurar desde una copia</span></label>
       </section>

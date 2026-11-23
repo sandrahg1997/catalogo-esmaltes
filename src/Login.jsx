@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from './cloud.js';
 
-export default function Login() {
+export default function Login({ onLocal }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
@@ -28,6 +28,8 @@ export default function Login() {
       </label>
       {err && <p role="alert" className="err">{err}</p>}
       <button className="primary" disabled={busy} style={{ marginTop: 18, width: '100%' }}>{busy ? 'Entrando…' : 'Entrar'}</button>
+      <button type="button" className="ghost" style={{ marginTop: 10, width: '100%' }} onClick={onLocal}>Usar solo en este móvil</button>
+      <p className="muted small">Sin cuenta, los esmaltes se guardan solo en este móvil. Más adelante puedes subirlos a la nube.</p>
     </form>
   );
 }
