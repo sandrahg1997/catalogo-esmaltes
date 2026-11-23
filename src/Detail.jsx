@@ -54,7 +54,7 @@ export default function Detail({ id, polishes, go, reload }) {
 
         {similar.length > 0 && (
           <>
-            <h2>Parecidos en tu colección</h2>
+            <h2>Se parece a… 💗</h2>
             <div className="similar">
               {similar.map(({ x, de }) => (
                 <button key={x.id} onClick={() => go(`/esmalte/${x.id}`)} className="sim">
@@ -69,7 +69,7 @@ export default function Detail({ id, polishes, go, reload }) {
 
         <div className="row">
           <button className="ghost" onClick={() => setEdit(true)}>Editar</button>
-          <button className="danger" onClick={async () => { if (confirm(`¿Borrar "${p.name}"?`)) { await remove(p.id); await reload(); go('/'); } }}>Borrar</button>
+          <button className="danger" onClick={async () => { if (confirm(`¿Seguro que quieres borrar "${p.name}"? No se puede deshacer.`)) { await remove(p.id); await reload(); go('/'); } }}>Borrar</button>
         </div>
       </div>
     </div>

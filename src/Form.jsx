@@ -144,7 +144,7 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
     <form className="screen form" onSubmit={save}>
       <header className="top">
         <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onCancel}>{Icon.close}</button>
-        <h1 className="mid">{editing ? 'Editar esmalte' : 'Nuevo esmalte'}</h1>
+        <h1 className="mid">{editing ? 'Editar esmalte' : 'Nuevo esmalte 💅'}</h1>
         <span style={{ width: 44 }} />
       </header>
 
@@ -237,7 +237,7 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
 
       {err && <p role="alert" className="err">{err}</p>}
       <div className="sticky">
-        <button className="primary" disabled={saving || !hex || !name.trim()}>{saving ? 'Guardando…' : 'Guardar esmalte'}</button>
+        <button className="primary" disabled={saving || !hex || !name.trim()}>{saving ? 'Guardando…' : 'Guardar mi esmalte'}</button>
       </div>
     </form>
   );

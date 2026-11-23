@@ -76,9 +76,9 @@ export default function App() {
       {view}
       {!full && (
         <nav className="tabbar">
-          <button className={!isColor ? 'on' : ''} onClick={() => go('/')}>{Icon.grid}Galería</button>
+          <button className={!isColor ? 'on' : ''} onClick={() => go('/')}>{Icon.grid}Inicio</button>
           <button className="fab" aria-label="Añadir esmalte" onClick={() => go('/anadir')}>{Icon.plus}</button>
-          <button className={isColor ? 'on' : ''} onClick={() => go('/color')}>{Icon.palette}Por color</button>
+          <button className={isColor ? 'on' : ''} onClick={() => go('/color')}>{Icon.palette}Colores</button>
         </nav>
       )}
     </>

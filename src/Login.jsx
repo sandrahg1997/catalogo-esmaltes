@@ -19,7 +19,7 @@ export default function Login({ onLocal }) {
   return (
     <form className="screen login" onSubmit={submit}>
       <h1>Mis esmaltes</h1>
-      <p className="muted">Entra con tu cuenta para ver tu colección.</p>
+      <p className="muted">¡Hola! Entra con tu cuenta para ver tu colección 💅</p>
       <label className="field">Email
         <input type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>

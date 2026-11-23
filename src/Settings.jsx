@@ -87,7 +87,7 @@ export default function Settings({ go, reload, count, session, localMode, setLoc
       <section className="card block">
         <h2>Copia de seguridad</h2>
         <p className="muted small">{supabase && session && !localMode ? `Tus esmaltes (${count}) ya están en la nube. La copia es un extra.` : `Los esmaltes (${count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.`}</p>
-        <button className="primary" onClick={doExport}>Descargar copia</button>
+        <button className="primary" onClick={doExport}>Descargar copia de seguridad</button>
         <label className="file"><input type="file" accept="application/json" onChange={doImport} /><span>Restaurar desde una copia</span></label>
       </section>
 

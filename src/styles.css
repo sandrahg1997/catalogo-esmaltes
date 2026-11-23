@@ -124,3 +124,20 @@ h1{font-family:'Fraunces',serif;font-weight:500;font-style:italic;font-size:34px
 .photos img{border-radius:20px;box-shadow:var(--shadow)}
 .sim{padding:10px 4px;background:rgba(255,255,255,.7);border-radius:16px;box-shadow:var(--shadow)}
 .empty{padding:70px 0}
+
+/* ---- Más amable ---- */
+body{font-size:16px;line-height:1.35}
+.tname{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.2;min-height:2.4em}
+.tbrand{font-size:10.5px}
+.tile{padding:16px 6px 14px;border-radius:26px}
+.tile .nail{width:64%}
+.pills select,.pill{height:46px;font-size:15px}
+.icon-btn{width:48px;height:48px;border-radius:24px}
+.primary,.ghost,.danger{height:54px;font-size:16px;border-radius:27px}
+.chip{height:34px;font-size:14px}
+.bigemoji{font-size:54px;line-height:1;filter:drop-shadow(0 8px 10px rgba(122,46,85,.25))}
+.empty p{margin:0;text-align:center;line-height:1.5}
+.field{font-size:13px}
+.field input,.field textarea{height:50px;font-size:16px;border-radius:16px}
+.tabbar button{font-size:12.5px}
+.toast{border-radius:22px;padding:12px 20px;font-size:15px;max-width:90%;text-align:center}

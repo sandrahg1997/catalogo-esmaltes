@@ -28,7 +28,7 @@ export default function Gallery({ polishes, go }) {
     <div className="screen">
       <header className="top">
         <div>
-          <div className="muted small">{polishes.length} esmaltes · {brands.length} marcas</div>
+          <div className="muted small">✨ {polishes.length} esmaltes · {brands.length} marcas</div>
           <h1>Mis esmaltes</h1>
         </div>
         <button className="icon-btn" aria-label="Ajustes" onClick={() => go('/ajustes')}>{Icon.gear}</button>
@@ -36,7 +36,7 @@ export default function Gallery({ polishes, go }) {
 
       <label className="search">
         {Icon.search}
-        <input aria-label="Buscar esmalte" placeholder="Buscar por nombre, marca o número" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input aria-label="Buscar esmalte" placeholder="¿Qué esmalte buscas?" value={q} onChange={(e) => setQ(e.target.value)} />
       </label>
 
       <div className="pills">
@@ -65,9 +65,10 @@ export default function Gallery({ polishes, go }) {
 
       {polishes.length === 0 ? (
         <div className="empty">
-          <p>Aún no tienes esmaltes.</p>
-          <button className="primary" onClick={() => go('/anadir')}>Añadir el primero</button>
-          <button className="ghost" onClick={() => go('/ajustes')}>Cargar ejemplos</button>
+          <div className="bigemoji" aria-hidden="true">💅</div>
+          <p><b>¡Empieza tu colección!</b><br /><span className="muted">Añade tu primer esmalte y verás aquí su color.</span></p>
+          <button className="primary" onClick={() => go('/anadir')}>Añadir mi primer esmalte</button>
+          <button className="ghost" onClick={() => go('/ajustes')}>Probar con ejemplos</button>
         </div>
       ) : (
         <div className="grid">
@@ -79,7 +80,13 @@ export default function Gallery({ polishes, go }) {
               {p.number ? <span className="tnum">nº {p.number}</span> : null}
             </button>
           ))}
-          {shown.length === 0 && <p className="muted">Nada con esos filtros.</p>}
+          {shown.length === 0 && (
+            <div className="empty" style={{ gridColumn: '1 / -1', padding: '30px 0' }}>
+              <div className="bigemoji" aria-hidden="true">🔍</div>
+              <p className="muted">No encuentro nada con esos filtros.</p>
+              <button className="ghost" onClick={() => { setQ(''); setBrand(''); setFinish(''); setFamily(''); }}>Quitar filtros</button>
+            </div>
+          )}
         </div>
       )}
     </div>

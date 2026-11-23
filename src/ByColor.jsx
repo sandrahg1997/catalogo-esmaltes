@@ -8,12 +8,12 @@ export default function ByColor({ polishes, go }) {
 
   return (
     <div className="screen">
-      <header className="top"><div><h1>Por color</h1><div className="muted small">Elige un color y te enseño los más parecidos</div></div></header>
+      <header className="top"><div><h1>Por color</h1><div className="muted small">Toca el cuadrito, elige un color y te enseño los esmaltes que más se le parecen 🎨</div></div></header>
       <label className="picker">
         <input type="color" value={hex} onChange={(e) => setHex(e.target.value.toUpperCase())} aria-label="Color a buscar" />
         <span>{hex.toUpperCase()}</span>
       </label>
-      {polishes.length === 0 ? <p className="muted">Añade esmaltes para poder buscar.</p> : (
+      {polishes.length === 0 ? <p className="muted">Añade tus primeros esmaltes para poder buscar por color.</p> : (
         <div className="grid">
           {list.map(({ it, de }) => (
             <button key={it.id} className="tile" onClick={() => go(`/esmalte/${it.id}`)}>

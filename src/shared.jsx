@@ -17,14 +17,14 @@ export function useObjectUrl(blob) {
 }
 
 // Uña ovalada vista desde arriba (punta hacia arriba).
-const NAIL = 'M10 54 C10 22 28 4 50 4 C72 4 90 22 90 54 L90 102 C90 120 72 130 50 130 C28 130 10 120 10 102 Z';
+const NAIL = 'M50 3 C64 3 72 24 80 50 C87 72 91 90 91 107 C91 122 73 132 50 132 C27 132 9 122 9 107 C9 90 13 72 20 50 C28 24 36 3 50 3 Z';
 
 export function Swatch({ p, className = '', big = false }) {
   const uid = useId().replace(/:/g, '');
   const url = useObjectUrl(p.swatch);
   const useImg = url && SPECIAL.includes(p.finish);
   return (
-    <svg viewBox="0 0 100 134" className={`nail ${big ? 'big' : ''} ${className}`} role="img" aria-label={`Color ${p.hex}`}>
+    <svg viewBox="-1 -1 102 136" className={`nail ${big ? 'big' : ''} ${className}`} role="img" aria-label={`Color ${p.hex}`}>
       <defs>
         <clipPath id={`c${uid}`}><path d={NAIL} /></clipPath>
         <linearGradient id={`s${uid}`} x1="0" y1="0" x2="1" y2="1">
@@ -38,7 +38,12 @@ export function Swatch({ p, className = '', big = false }) {
           ? <image href={url} x="0" y="0" width="100" height="134" preserveAspectRatio="xMidYMid slice" />
           : <rect width="100" height="134" fill={p.hex} />}
         {!useImg && <rect width="100" height="134" fill={`url(#s${uid})`} />}
-        {!useImg && <path d="M24 46 C25 26 35 14 46 11 C37 24 35 52 35 96 C28 94 24 74 24 46 Z" fill="#fff" opacity=".32" />}
+        {!useImg && (
+          <>
+            <path d="M22 106 C22 88 27 70 35 46 C39 33 43 22 48 14 C44 44 39 76 38 110 C28 110 22 110 22 106 Z" fill="#fff" opacity=".34" />
+            <ellipse cx="70" cy="108" rx="8" ry="13" fill="#fff" opacity=".12" transform="rotate(14 70 108)" />
+          </>
+        )}
       </g>
       <path d={NAIL} fill="none" stroke="rgba(0,0,0,.14)" strokeWidth="1" />
     </svg>
