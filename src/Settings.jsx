@@ -3,6 +3,7 @@ import { clearDemo, exportBackup, getAllLocal, importBackup, newId, put, uploadL
 import { supabase } from './cloud.js';
 import { familyOf, hexToLab } from './color.js';
 import { Icon } from './shared.jsx';
+import { csvToPolishes } from './csv.js';
 
 const DEMO = [
   ['Essie', 'Cherry Bomb', '#B3202F', 'Crema'], ['Essie', 'Ballet Slippers', '#E9C3BA', 'Crema'],
@@ -29,6 +30,18 @@ export default function Settings({ go, reload, count, session, localMode, setLoc
     const f = e.target.files?.[0];
     if (!f) return;
     try { setMsg(`Importados ${await importBackup(f)} esmaltes.`); await reload(); } catch (err) { setMsg(`Error: ${err.message}`); }
+  };
+  const doCsv = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const items = csvToPolishes(await f.text());
+      for (const p of items) { const { sinColor, ...rest } = p; await put(rest); }
+      const sin = items.filter((p) => p.sinColor).length;
+      setMsg(`Importados ${items.length} esmaltes${sin ? ` (${sin} sin color: ponlo desde su ficha)` : ''}.`);
+      await reload();
+    } catch (err) { setMsg(`Error: ${err.message}`); }
+    e.target.value = '';
   };
   const doDemo = async () => {
     for (const [brand, name, hex, finish] of DEMO) {
@@ -76,6 +89,12 @@ export default function Settings({ go, reload, count, session, localMode, setLoc
         <p className="muted small">{supabase && session && !localMode ? `Tus esmaltes (${count}) ya están en la nube. La copia es un extra.` : `Los esmaltes (${count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.`}</p>
         <button className="primary" onClick={doExport}>Descargar copia</button>
         <label className="file"><input type="file" accept="application/json" onChange={doImport} /><span>Restaurar desde una copia</span></label>
+      </section>
+
+      <section className="card block">
+        <h2>Importar desde Excel</h2>
+        <p className="muted small">Guarda tu Excel como CSV. Columnas: marca, nombre, numero, acabado, hex (opcional), capas, notas. Solo «nombre» es obligatoria. Las fotos se añaden después desde cada ficha.</p>
+        <label className="file"><input type="file" accept=".csv,text/csv" onChange={doCsv} /><span>Importar un CSV</span></label>
       </section>
 
       <section className="card block">
