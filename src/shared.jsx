@@ -17,7 +17,7 @@ export function useObjectUrl(blob) {
 }
 
 // Uña ovalada vista desde arriba (punta hacia arriba).
-const NAIL = 'M50 3 C64 3 72 24 80 50 C87 72 91 90 91 107 C91 122 73 132 50 132 C27 132 9 122 9 107 C9 90 13 72 20 50 C28 24 36 3 50 3 Z';
+const NAIL = 'M50 2 C56 2 60 8 64 20 L80 74 C84 87 86 96 86 106 C86 123 70 133 50 133 C30 133 14 123 14 106 C14 96 16 87 20 74 L36 20 C40 8 44 2 50 2 Z';
 
 export function Swatch({ p, className = '', big = false }) {
   const uid = useId().replace(/:/g, '');
@@ -40,8 +40,8 @@ export function Swatch({ p, className = '', big = false }) {
         {!useImg && <rect width="100" height="134" fill={`url(#s${uid})`} />}
         {!useImg && (
           <>
-            <path d="M22 106 C22 88 27 70 35 46 C39 33 43 22 48 14 C44 44 39 76 38 110 C28 110 22 110 22 106 Z" fill="#fff" opacity=".34" />
-            <ellipse cx="70" cy="108" rx="8" ry="13" fill="#fff" opacity=".12" transform="rotate(14 70 108)" />
+            <path d="M25 104 C25 94 27 86 31 74 L42 36 C44 28 46 21 49 14 C47 44 43 80 41 112 C32 112 25 112 25 104 Z" fill="#fff" opacity=".34" />
+            <ellipse cx="68" cy="108" rx="8" ry="13" fill="#fff" opacity=".12" transform="rotate(14 70 108)" />
           </>
         )}
       </g>
