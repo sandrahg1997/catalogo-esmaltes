@@ -7,7 +7,11 @@ import Form from './Form.jsx';
 import ByColor from './ByColor.jsx';
 import Settings from './Settings.jsx';
 
+// En la versión de demostración (artifact) la ruta vive en memoria, sin tocar el hash de la URL.
+const MEMORY_ROUTE = import.meta.env.VITE_MEMORY_ROUTE === '1';
+
 const useRoute = () => {
+  const [mem, setMem] = useState('/');
   const read = () => location.hash.replace(/^#/, '') || '/';
   const [route, setRoute] = useState(read);
   useEffect(() => {
@@ -15,6 +19,7 @@ const useRoute = () => {
     addEventListener('hashchange', f);
     return () => removeEventListener('hashchange', f);
   }, []);
+  if (MEMORY_ROUTE) return [mem, (r) => { setMem(r); window.scrollTo(0, 0); }];
   return [route, (r) => { location.hash = r; }];
 };
 
