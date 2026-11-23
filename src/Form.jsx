@@ -22,8 +22,8 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
   const [saving, setSaving] = useState(false);
 
   // Calibración
-  const [refType, setRefType] = useState('gris');
-  const [pts, setPts] = useState({ ref: null, pol: null });
+  const [refType, setRefType] = useState('blanco');
+  const [pts, setPts] = useState({ ref: [], pol: null });
   const [before, setBefore] = useState(null);
   const [mode, setMode] = useState('ref');
   const canvasRef = useRef(null);
@@ -37,8 +37,13 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
     const r = Math.max(src.width, src.height) * 0.012;
     const raw = medianColor(ctx, polPt.x, polPt.y, r);
     setBefore(rgbToHex(raw));
-    if (refPt) {
-      const gains = gainsFromReference(medianColor(ctx, refPt.x, refPt.y, r), REFERENCES[type].target);
+    if (refPt && refPt.length) {
+      const samples = refPt.map((q) => medianColor(ctx, q.x, q.y, r));
+      const med = [0, 1, 2].map((i) => {
+        const a = samples.map((v) => v[i]).sort((x, y) => x - y);
+        return a[Math.floor(a.length / 2)];
+      });
+      const gains = gainsFromReference(med, REFERENCES[type].target);
       gainsRef.current = gains;
       setHex(rgbToHex(applyGains(raw, gains)));
       setCalibrated(true);
@@ -59,7 +64,7 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
     view.height = c.height;
     view.getContext('2d').drawImage(c, 0, 0);
     gainsRef.current = null;
-    setPts({ ref: null, pol: null });
+    setPts({ ref: [], pol: null });
     setBefore(null);
     setMode('ref');
   };
@@ -72,9 +77,10 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
       y: ((e.clientY - rect.top) / rect.height) * srcRef.current.height
     };
     if (mode === 'ref') {
-      const next = { ...pts, ref: pt };
+      if (pts.ref.length >= 3) return;
+      const next = { ...pts, ref: [...pts.ref, pt] };
       setPts(next);
-      if (next.pol) recompute(pt, next.pol); else setMode('pol');
+      if (next.pol) recompute(next.ref, next.pol);
     } else {
       const next = { ...pts, pol: pt };
       setPts(next);
@@ -121,7 +127,9 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
     onDone();
   };
 
-  const step = !pts.ref ? 'Toca la tarjeta de referencia' : !pts.pol ? 'Ahora toca el esmalte' : 'Listo. Puedes volver a tocar para ajustar';
+  const step = mode === 'ref'
+    ? (pts.ref.length === 0 ? 'Toca el papel o tarjeta (hasta 3 puntos)' : `Referencia: ${pts.ref.length}/3 puntos`)
+    : !pts.pol ? 'Ahora toca el esmalte' : 'Listo. Toca otra vez para ajustar';
 
   return (
     <form className="screen form" onSubmit={save}>
@@ -143,14 +151,24 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
             <input type="file" accept="image/*" capture="environment" onChange={onPhoto} />
             <span>{srcRef.current ? 'Cambiar foto' : 'Hacer foto o elegir del escáner'}</span>
           </label>
-          <p className="muted small">Pon la tarjeta junto al esmalte, con luz de día y sin flash.</p>
+          <p className="muted small">Pon el folio blanco o la tarjeta junto al esmalte, con luz de día, sin flash y sin sombras encima.</p>
 
           <div className="stage" style={{ display: srcRef.current ? 'block' : 'none' }}>
             <canvas ref={canvasRef} onClick={onTap} aria-label="Foto para calibrar" />
-            {pts.ref && <i className="pin ref" style={{ left: `${(pts.ref.x / (srcRef.current?.width || 1)) * 100}%`, top: `${(pts.ref.y / (srcRef.current?.height || 1)) * 100}%` }} />}
+            {pts.ref.map((q, i) => <i key={i} className="pin ref" style={{ left: `${(q.x / (srcRef.current?.width || 1)) * 100}%`, top: `${(q.y / (srcRef.current?.height || 1)) * 100}%` }} />)}
             {pts.pol && <i className="pin pol" style={{ left: `${(pts.pol.x / (srcRef.current?.width || 1)) * 100}%`, top: `${(pts.pol.y / (srcRef.current?.height || 1)) * 100}%` }} />}
             <span className="hint">{step}</span>
           </div>
+
+          {srcRef.current && (
+            <div className="row" style={{ marginTop: 10 }}>
+              {mode === 'ref' ? (
+                <button type="button" className="ghost" disabled={pts.ref.length === 0} onClick={() => setMode('pol')}>Siguiente: tocar el esmalte</button>
+              ) : (
+                <button type="button" className="ghost" onClick={() => { setPts({ ref: [], pol: pts.pol }); gainsRef.current = null; setMode('ref'); }}>Repetir referencia</button>
+              )}
+            </div>
+          )}
 
           {before && (
             <div className="ba">
