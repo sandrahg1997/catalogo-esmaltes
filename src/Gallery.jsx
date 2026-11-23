@@ -72,10 +72,11 @@ export default function Gallery({ polishes, go }) {
       ) : (
         <div className="grid">
           {shown.map((p) => (
-            <button key={p.id} className="tile" onClick={() => go(`/esmalte/${p.id}`)}>
+            <button key={p.id} className="tile" style={{ '--c': p.hex }} onClick={() => go(`/esmalte/${p.id}`)}>
               <Swatch p={p} />
               <span className="tname">{p.name}</span>
               <span className="tbrand">{p.brand}</span>
+              {p.number ? <span className="tnum">nº {p.number}</span> : null}
             </button>
           ))}
           {shown.length === 0 && <p className="muted">Nada con esos filtros.</p>}

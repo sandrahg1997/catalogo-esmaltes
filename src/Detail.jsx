@@ -21,7 +21,7 @@ export default function Detail({ id, polishes, go, reload }) {
 
   return (
     <div className="screen detail">
-      <div className="hero">
+      <div className="hero" style={{ '--c': p.hex }}>
         <button className="icon-btn floating" aria-label="Volver" onClick={() => go('/')}>{Icon.back}</button>
         <Swatch p={p} big />
         <span className="chip-light">{p.calibrated ? 'Color calibrado' : 'Color sin calibrar'}</span>
