@@ -21,10 +21,10 @@ export default function Detail({ id, polishes, go, reload }) {
 
   return (
     <div className="screen detail">
-      <div className="hero" style={{ background: p.hex }}>
+      <div className="hero">
         <button className="icon-btn floating" aria-label="Volver" onClick={() => go('/')}>{Icon.back}</button>
-        <span className="hero-gloss" />
-        <span className="chip-light">Color calibrado</span>
+        <Swatch p={p} big />
+        <span className="chip-light">{p.calibrated ? 'Color calibrado' : 'Color sin calibrar'}</span>
       </div>
       <div className="body">
         <div className="muted small">{p.brand}{p.number ? ` · nº ${p.number}` : ''}</div>

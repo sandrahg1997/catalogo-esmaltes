@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 
 export const FINISHES = ['Crema', 'Jelly', 'Mate', 'Shimmer', 'Glitter', 'Holográfico', 'Cromado', 'Duocromo', 'Termocrómico'];
 // Acabados en los que un color plano no representa el esmalte: se enseña la foto.
@@ -15,16 +15,32 @@ export function useObjectUrl(blob) {
   return url;
 }
 
+// Uña ovalada vista desde arriba (punta hacia arriba).
+const NAIL = 'M10 54 C10 22 28 4 50 4 C72 4 90 22 90 54 L90 102 C90 120 72 130 50 130 C28 130 10 120 10 102 Z';
+
 export function Swatch({ p, className = '', big = false }) {
+  const uid = useId().replace(/:/g, '');
   const url = useObjectUrl(p.swatch);
   const useImg = url && SPECIAL.includes(p.finish);
-  const style = useImg
-    ? { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-    : { background: p.hex };
   return (
-    <div className={`swatch ${big ? 'big' : ''} ${className}`} style={style} role="img" aria-label={`Color ${p.hex}`}>
-      {!useImg && <span className="gloss" />}
-    </div>
+    <svg viewBox="0 0 100 134" className={`nail ${big ? 'big' : ''} ${className}`} role="img" aria-label={`Color ${p.hex}`}>
+      <defs>
+        <clipPath id={`c${uid}`}><path d={NAIL} /></clipPath>
+        <linearGradient id={`s${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".16" />
+          <stop offset=".55" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity=".14" />
+        </linearGradient>
+      </defs>
+      <g clipPath={`url(#c${uid})`}>
+        {useImg
+          ? <image href={url} x="0" y="0" width="100" height="134" preserveAspectRatio="xMidYMid slice" />
+          : <rect width="100" height="134" fill={p.hex} />}
+        {!useImg && <rect width="100" height="134" fill={`url(#s${uid})`} />}
+        {!useImg && <path d="M24 46 C25 26 35 14 46 11 C37 24 35 52 35 96 C28 94 24 74 24 46 Z" fill="#fff" opacity=".32" />}
+      </g>
+      <path d={NAIL} fill="none" stroke="rgba(0,0,0,.14)" strokeWidth="1" />
+    </svg>
   );
 }
 
