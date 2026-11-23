@@ -20,6 +20,10 @@ create table if not exists public.polishes (
   created_at  timestamptz not null default now()
 );
 
+-- Permisos de la tabla para usuarios con sesión (sin esto: "permission denied for table polishes")
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.polishes to authenticated;
+
 alter table public.polishes enable row level security;
 
 drop policy if exists "polishes_owner_all" on public.polishes;
