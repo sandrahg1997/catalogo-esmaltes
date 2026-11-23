@@ -20,6 +20,7 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
   const [swatch, setSwatch] = useState(initial?.swatch || null);
   const [showCal, setShowCal] = useState(!editing);
   const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
 
   // Calibración
   const [refType, setRefType] = useState('blanco');
@@ -97,6 +98,8 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
     e.preventDefault();
     if (!hex || !name.trim()) return;
     setSaving(true);
+    setErr('');
+    try {
     let swatchBlob = swatch;
     if (srcRef.current) {
       const tmp = document.createElement('canvas');
@@ -122,9 +125,15 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
       family: familyOf(lab),
       calibrated,
       swatch: swatchBlob,
-      nail
+      nail,
+      swatchPath: initial?.swatchPath || null,
+      nailPath: initial?.nailPath || null
     });
     onDone();
+    } catch (e2) {
+      setErr(`No se pudo guardar: ${e2.message}`);
+      setSaving(false);
+    }
   };
 
   const step = mode === 'ref'
@@ -226,6 +235,7 @@ export default function Form({ initial, brands = [], onDone, onCancel }) {
         <span>{nail ? 'Foto en uña añadida · cambiar' : 'Añadir foto en uña (opcional)'}</span>
       </label>
 
+      {err && <p role="alert" className="err">{err}</p>}
       <div className="sticky">
         <button className="primary" disabled={saving || !hex || !name.trim()}>{saving ? 'Guardando…' : 'Guardar esmalte'}</button>
       </div>

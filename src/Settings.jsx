@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { clearDemo, exportBackup, importBackup, newId, put } from './db.js';
+import { clearDemo, exportBackup, getAllLocal, importBackup, newId, put, uploadLocalToCloud } from './db.js';
+import { supabase } from './cloud.js';
 import { familyOf, hexToLab } from './color.js';
 import { Icon } from './shared.jsx';
 
@@ -12,7 +13,7 @@ const DEMO = [
   ['Zoya', 'Poppy', '#C8342E', 'Crema'], ['Catrice', 'Nude Beige', '#D2AA94', 'Crema']
 ];
 
-export default function Settings({ go, reload, count }) {
+export default function Settings({ go, reload, count, session }) {
   const [msg, setMsg] = useState('');
 
   const doExport = async () => {
@@ -46,9 +47,25 @@ export default function Settings({ go, reload, count }) {
         <span style={{ width: 44 }} />
       </header>
 
+      {supabase && session && (
+        <section className="card block">
+          <h2>Cuenta</h2>
+          <p className="muted small">Sesión iniciada como {session.user.email}. Tus esmaltes ({count}) y fotos están guardados en la nube.</p>
+          <button className="ghost" onClick={async () => {
+            try {
+              const local = await getAllLocal();
+              if (!local.length) return setMsg('No hay esmaltes guardados en este móvil.');
+              setMsg(`Subidos ${await uploadLocalToCloud()} esmaltes a la nube.`);
+              await reload();
+            } catch (err) { setMsg(`Error: ${err.message}`); }
+          }}>Subir los esmaltes guardados en este móvil</button>
+          <button className="ghost" onClick={() => supabase.auth.signOut()}>Cerrar sesión</button>
+        </section>
+      )}
+
       <section className="card block">
         <h2>Copia de seguridad</h2>
-        <p className="muted small">Los esmaltes ({count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.</p>
+        <p className="muted small">{supabase && session ? `Tus esmaltes (${count}) ya están en la nube. La copia es un extra.` : `Los esmaltes (${count}) se guardan solo en este móvil. Descarga una copia de vez en cuando, sobre todo antes de limpiar el navegador o cambiar de móvil.`}</p>
         <button className="primary" onClick={doExport}>Descargar copia</button>
         <label className="file"><input type="file" accept="application/json" onChange={doImport} /><span>Restaurar desde una copia</span></label>
       </section>

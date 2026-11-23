@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getAll } from './db.js';
+import { getAll, setCloudMode } from './db.js';
+import { supabase } from './cloud.js';
+import Login from './Login.jsx';
 import { Icon } from './shared.jsx';
 import Gallery from './Gallery.jsx';
 import Detail from './Detail.jsx';
@@ -27,10 +29,29 @@ export default function App() {
   const [route, go] = useRoute();
   const [polishes, setPolishes] = useState([]);
   const [ready, setReady] = useState(false);
-  const reload = useCallback(async () => { setPolishes(await getAll()); setReady(true); }, []);
-  useEffect(() => { reload(); }, [reload]);
+  const [session, setSession] = useState(supabase ? undefined : null);
+  const [loadErr, setLoadErr] = useState('');
+  const reload = useCallback(async () => {
+    try { setPolishes(await getAll()); setLoadErr(''); } catch (e) { setLoadErr(e.message || 'No se pudo cargar'); }
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (session === undefined) return;
+    setCloudMode(!!session);
+    if (supabase && !session) { setPolishes([]); setReady(true); return; }
+    reload();
+  }, [session, reload]);
 
   if (!ready) return null;
+  if (supabase && !session) return <Login />;
   const brands = [...new Set(polishes.map((p) => p.brand).filter(Boolean))].sort();
   const full = route.startsWith('/esmalte/') || route === '/anadir' || route === '/ajustes';
   const isColor = route === '/color';
@@ -38,12 +59,13 @@ export default function App() {
   let view;
   if (route === '/anadir') view = <Form brands={brands} onDone={async () => { await reload(); go('/'); }} onCancel={() => go('/')} />;
   else if (route.startsWith('/esmalte/')) view = <Detail id={route.split('/')[2]} polishes={polishes} go={go} reload={reload} />;
-  else if (route === '/ajustes') view = <Settings go={go} reload={reload} count={polishes.length} />;
+  else if (route === '/ajustes') view = <Settings go={go} reload={reload} count={polishes.length} session={session} />;
   else if (isColor) view = <ByColor polishes={polishes} go={go} />;
   else view = <Gallery polishes={polishes} go={go} />;
 
   return (
     <>
+      {loadErr && <p role="alert" className="toast">{loadErr}</p>}
       {view}
       {!full && (
         <nav className="tabbar">

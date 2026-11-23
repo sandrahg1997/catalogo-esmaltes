@@ -8,6 +8,7 @@ export function useObjectUrl(blob) {
   const [url, setUrl] = useState(null);
   useEffect(() => {
     if (!blob) return setUrl(null);
+    if (typeof blob === 'string') return setUrl(blob);
     const u = URL.createObjectURL(blob);
     setUrl(u);
     return () => URL.revokeObjectURL(u);
